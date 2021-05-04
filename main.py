@@ -21,8 +21,9 @@ PERSON_GROUP_ID = 'family'
 KID_PERSON_ID = os.getenv('KID_PERSON_ID')
 
 
-def detect_face(url):
-    face_client = get_face_client()
+def detect_face(url, face_client=None):
+    if not face_client:
+        face_client = get_face_client()
 
     detected_faces = face_client.face.detect_with_url(
         url=url, detection_model=DETECTION_MODEL, recognition_model=RECOGNITION_MODEL)
@@ -92,13 +93,13 @@ def is_kid_there(url):
 
 
 def identify_face(url):
-    faces = detect_face(url)
+    face_client = get_face_client()
+
+    faces = detect_face(url, face_client)
     if not faces:
         return None
 
     face_ids = list(map(lambda x: x.face_id, faces))
-
-    face_client = get_face_client()
     results = face_client.face.identify(face_ids, PERSON_GROUP_ID)
 
     if not results:
