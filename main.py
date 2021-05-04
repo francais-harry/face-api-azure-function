@@ -5,10 +5,8 @@ import os
 import sys
 import time
 import uuid
-import requests
 from urllib.parse import urlparse
 from io import BytesIO
-from PIL import Image, ImageDraw
 from azure.cognitiveservices.vision.face import FaceClient
 from msrest.authentication import CognitiveServicesCredentials
 from azure.cognitiveservices.vision.face.models import TrainingStatusType, Person
@@ -22,11 +20,10 @@ AZURE_FACE_ENDPOINT = os.getenv('AZURE_FACE_ENDPOINT')
 PERSON_GROUP_ID = 'family'
 KID_PERSON_ID = os.getenv('KID_PERSON_ID')
 
-
 def detect_face(url):
     face_client = get_face_client()
 
-    detected_faces = face_client.face.detect_with_url(url = url, detection_model=DETECTION_MODEL)
+    detected_faces = face_client.face.detect_with_url(url = url, detection_model=DETECTION_MODEL, recognition_model=RECOGNITION_MODEL)
     if not detected_faces:
         print('No face detected')
         return None
@@ -34,7 +31,7 @@ def detect_face(url):
     for face in detected_faces:
         print(f'Face deteced, id={face.face_id}, {face.face_rectangle}')
 
-    return face
+    return detected_faces
 
 def get_face_client():
     return FaceClient(AZURE_FACE_ENDPOINT, CognitiveServicesCredentials(AZURE_FACE_KEY))
@@ -71,3 +68,20 @@ def get_train_status():
     face_client = get_face_client()
     status = face_client.person_group.get_training_status(PERSON_GROUP_ID)
     print(f'status={status}')
+
+def identify_face(url):
+    faces = detect_face(url)
+    if not faces:
+        return
+
+    face_ids = list(map(lambda x: x.face_id, faces))
+
+    face_client = get_face_client()
+    results = face_client.face.identify(face_ids, PERSON_GROUP_ID)
+    
+    if not results:
+        print(f'No face identified')
+        return
+    
+    for result in results:
+        print(f'result={result}')
