@@ -80,10 +80,11 @@ def is_kid_there(url):
     candidates = identify_face(url)
     if not candidates:
         print('There is no kid')
-        return
+        return False
 
     result = any(candidate.person_id == KID_PERSON_ID for candidate in candidates)
     print(f'kid found? result={result}')
+    return result
 
 
 def identify_face(url):
