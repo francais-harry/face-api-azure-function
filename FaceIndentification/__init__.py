@@ -1,6 +1,7 @@
 import logging
 import azure.functions as func
 from urllib.parse import urlparse
+from .. import face_identity
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
@@ -17,6 +18,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if input_url_string:
         input_url = urlparse(input_url_string)
         if input_url.scheme == "https":
-            return func.HttpResponse(f"Hello world.")
+            is_kid_there = face_identity.is_kid_there(input_url_string)
+            if is_kid_there:
+                return func.HttpResponse("Detected")
+            return func.HttpResponse("Not detected")
 
     return func.HttpResponse("Invalid request parameter", status_code=400)
