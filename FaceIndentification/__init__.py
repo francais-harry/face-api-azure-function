@@ -18,9 +18,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     if input_url_string:
         input_url = urlparse(input_url_string)
         if input_url.scheme == "https":
-            is_kid_there = face_identity.is_kid_there(input_url_string)
-            if is_kid_there:
-                return func.HttpResponse("Detected")
+            logging.info(f'Input URL={input_url_string}')
+            try:
+                is_kid_there = face_identity.is_kid_there(input_url_string)
+                if is_kid_there:
+                    return func.HttpResponse("Detected")
+            except Exception as e:
+                logging.warning(f"Some error happens with {e.args}")
+                return func.HttpResponse("Something bad happens", status_code=500)
             return func.HttpResponse("Not detected")
 
     return func.HttpResponse("Invalid request parameter", status_code=400)
