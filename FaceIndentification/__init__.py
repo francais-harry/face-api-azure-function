@@ -25,7 +25,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     return func.HttpResponse("Detected")
             except Exception as e:
                 logging.warning(f"Some error happens with {e.args}")
-                return func.HttpResponse("Something bad happens", status_code=500)
+                return func.HttpResponse(f"Something bad happens with {input_url_string}. message: {e.args}", status_code=500)
             return func.HttpResponse("Not detected")
 
     return func.HttpResponse("Invalid request parameter", status_code=400)
