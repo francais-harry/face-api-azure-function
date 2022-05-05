@@ -2,5 +2,5 @@
 # The Python Worker is managed by Azure Functions platform
 # Manually managing azure-functions-worker may cause unexpected issues
 
-azure-functions
-azure-cognitiveservices-vision-face == 0.5.0
+azure-functions == 1.11.0
+azure-cognitiveservices-vision-face == 0.6.0
